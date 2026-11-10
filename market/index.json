@@ -43,7 +43,7 @@
         "en": "Connect a local Zotero library: search, read and edit items, add papers in bulk, and read PDF annotations, notes and indexed full text.",
         "zh": "直连本机 Zotero：查库、改库、批量入库，读 PDF 注释与笔记，取已索引全文。"
       },
-      "icon": "icon.svg",
+      "icon": "icon.png",
       "author": "Guangdang",
       "homepage": "https://github.com/kuangdang123/dsh-zotero#readme",
       "repository": {
@@ -70,11 +70,11 @@
       "versions": [
         {
           "version": "0.1.0",
-          "publishTimestamp": 1794277175,
+          "publishTimestamp": 1794277872,
           "source": {
             "type": "git",
             "url": "https://github.com/kuangdang123/dsh-zotero",
-            "commit": "cc1996f78ff1042d4eeb4d4b1ff9a1bde3b14b7f"
+            "commit": "79ffc8502384a97e827fedbb01921d06c7c063f3"
           },
           "engines": {
             "dsh": ">=0.2.0"

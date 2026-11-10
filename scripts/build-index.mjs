@@ -61,7 +61,9 @@ const index = {
         en: 'Connect a local Zotero library: search, read and edit items, add papers in bulk, and read PDF annotations, notes and indexed full text.',
         zh: '直连本机 Zotero：查库、改库、批量入库，读 PDF 注释与笔记，取已索引全文。',
       },
-      icon: 'icon.svg',
+      // The raster twin of icon.svg: plugin-market catalogs only accept raster
+      // icons, so both the published index and the catalog entry point here.
+      icon: 'icon.png',
       author: 'Guangdang',
       homepage: `https://github.com/${repositoryUrl.split('/').slice(3, 5).join('/')}#readme`,
       repository: { url: repositoryUrl },
@@ -86,5 +88,6 @@ const index = {
 const marketDir = join(root, 'market')
 mkdirSync(marketDir, { recursive: true })
 writeFileSync(join(marketDir, 'index.json'), `${JSON.stringify(index, null, 2)}\n`)
+copyFileSync(join(root, 'icon.png'), join(marketDir, 'icon.png'))
 copyFileSync(join(root, 'icon.svg'), join(marketDir, 'icon.svg'))
 console.log(`wrote market/index.json for ${pkg.name}@${pkg.version} at ${commit}`)

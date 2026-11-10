@@ -1,0 +1,54 @@
+{
+  "name": "dsh-zotero",
+  "version": "0.1.0",
+  "description": "Direct connection between DeepSeek Harness and a local Zotero library: search, read, add, update and trash items, read PDF annotations and notes, pull indexed full text, and discover related papers by DOI. 直连本机 Zotero：查库、改库、批量入库、读注释笔记、取全文。",
+  "type": "module",
+  "license": "MIT",
+  "author": "Guangdang",
+  "icon": "./icon.svg",
+  "homepage": "https://github.com/kuangdang123/dsh-zotero#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kuangdang123/dsh-zotero.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kuangdang123/dsh-zotero/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "zotero",
+    "literature",
+    "annotations",
+    "reference-manager"
+  ],
+  "exports": {
+    ".": "./index.js",
+    "./locale/en.json": "./locale/en.json",
+    "./locale/zh.json": "./locale/zh.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "lib",
+    "cordis.patch.yml",
+    "icon.svg",
+    "locale",
+    "market",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20.11",
+    "dsh": ">=0.2.0"
+  },
+  "scripts": {
+    "test": "node --test tests/tools.test.mjs",
+    "index": "node scripts/build-index.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

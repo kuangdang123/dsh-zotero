@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Zotero 直连",
+    "description": "直接操作本机 Zotero 文献库：查条目、读元数据、按 DOI/arXiv/ISBN 或文献检索批量入库、改字段与标签分类、移到回收站或永久删除、把 PDF 高亮与批注读成精读稿、取已索引全文，并把精读笔记写回 Zotero。"
+  }
+}

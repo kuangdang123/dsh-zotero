@@ -6,3 +6,8 @@ plugin-data/
 auth.json
 # Added by hand: a workflow needs the 'workflow' scope on the pushing token.
 .github/workflows/test.yml
+
+# Windows Explorer folder metadata
+desktop.ini
+Thumbs.db
+.DS_Store

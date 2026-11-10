@@ -41,8 +41,8 @@ const index = {
   format: 1,
   title: { en: 'dsh-zotero', zh: 'dsh-zotero' },
   description: {
-    en: 'Third-party DSH bundles published from guangdang/dsh-zotero.',
-    zh: 'guangdang/dsh-zotero 发布的第三方 DSH 组合包。',
+    en: 'Third-party DSH bundles published from kuangdang123/dsh-zotero.',
+    zh: 'kuangdang123/dsh-zotero 发布的第三方 DSH 组合包。',
   },
   metadata: {
     categories: {
@@ -62,7 +62,7 @@ const index = {
         zh: '直连本机 Zotero：查库、改库、批量入库，读 PDF 注释与笔记，取已索引全文。',
       },
       icon: 'icon.svg',
-      author: 'guangdang',
+      author: 'Guangdang',
       homepage: `https://github.com/${repositoryUrl.split('/').slice(3, 5).join('/')}#readme`,
       repository: { url: repositoryUrl },
       metadata: {

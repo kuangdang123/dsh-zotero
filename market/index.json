@@ -70,11 +70,11 @@
       "versions": [
         {
           "version": "0.1.0",
-          "publishTimestamp": 1794277872,
+          "publishTimestamp": 1794279247,
           "source": {
             "type": "git",
             "url": "https://github.com/kuangdang123/dsh-zotero",
-            "commit": "79ffc8502384a97e827fedbb01921d06c7c063f3"
+            "commit": "97fc833fa2074cb7ac91d4aeaa8042dba64fc83b"
           },
           "engines": {
             "dsh": ">=0.2.0"

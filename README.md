@@ -127,7 +127,19 @@ zotero_note { "action": "append", "note": "NOTE5678", "content": "补一段实�
 | `zotero_annotations` 返回 0 条 | Zotero 还没导入该 PDF 的批注，或这篇论文没有 PDF 附件。 |
 | 全文返回「未索引」 | Zotero 尚未为该 PDF 建全文索引；在 Zotero 里右键附件 → 重建索引。 |
 
-## 八、开发
+## 八、开源与市场收录
+
+- 源码与发布：<https://github.com/kuangdang123/dsh-zotero>，版本标签见 Releases（`v0.1.0`）。
+- 社区目录：已向 `awesome-dsh-plugin/awesome-dsh-plugin` 提交条目
+  `data/plugins/kuangdang123__dsh-zotero.yml`（PR #13777）。
+  合并后目录会以 format-1 索引发布（`https://cdn.jsdelivr.net/npm/dsh-plugin-catalog/index.json`），
+  dshmarket（dshmarket.com）以及任何订阅该索引的 DSH 都能直接装到。
+- 本仓库也自带一份 format-1 索引 `market/index.json`（`npm run index` 生成，每次发版重新固定 commit），
+  DSH 的「插件 → 发现」里添加 `https://raw.githubusercontent.com/kuangdang123/dsh-zotero/main/market/index.json` 即可。
+- 目录条目的门禁：仓库要声明 `dsh.bundle`、创建满 1 天、带 `dsh-plugin` topic；
+  图标只接受 GitHub 托管的 png/jpg/webp，`icon.png` 由 `npm run icon` 从 `icon.svg` 生成（零依赖渲染）。
+
+## 九、开发
 
 ```sh
 node --test tests/tools.test.mjs

@@ -1,0 +1,86 @@
+{
+  "format": 1,
+  "title": {
+    "en": "dsh-zotero",
+    "zh": "dsh-zotero"
+  },
+  "description": {
+    "en": "Third-party DSH bundles published from kuangdang123/dsh-zotero.",
+    "zh": "kuangdang123/dsh-zotero 发布的第三方 DSH 组合包。"
+  },
+  "metadata": {
+    "categories": {
+      "literature": {
+        "title": {
+          "en": "Literature",
+          "zh": "文献"
+        }
+      },
+      "productivity": {
+        "title": {
+          "en": "Productivity",
+          "zh": "效率"
+        }
+      }
+    },
+    "labels": {
+      "thirdparty": {
+        "title": {
+          "en": "Third-party",
+          "zh": "第三方"
+        }
+      }
+    }
+  },
+  "plugins": [
+    {
+      "name": "dsh-zotero",
+      "title": {
+        "en": "Zotero Bridge",
+        "zh": "Zotero 直连"
+      },
+      "description": {
+        "en": "Connect a local Zotero library: search, read and edit items, add papers in bulk, and read PDF annotations, notes and indexed full text.",
+        "zh": "直连本机 Zotero：查库、改库、批量入库，读 PDF 注释与笔记，取已索引全文。"
+      },
+      "icon": "icon.svg",
+      "author": "Guangdang",
+      "homepage": "https://github.com/kuangdang123/dsh-zotero#readme",
+      "repository": {
+        "url": "https://github.com/kuangdang123/dsh-zotero"
+      },
+      "metadata": {
+        "category": "literature",
+        "labels": [
+          "thirdparty"
+        ],
+        "keywords": [
+          "dsh",
+          "dsh-plugin",
+          "deepseek-harness",
+          "zotero",
+          "literature",
+          "annotations",
+          "reference-manager"
+        ]
+      },
+      "dist-tags": {
+        "latest": "0.1.0"
+      },
+      "versions": [
+        {
+          "version": "0.1.0",
+          "publishTimestamp": 1794277175,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/kuangdang123/dsh-zotero",
+            "commit": "cc1996f78ff1042d4eeb4d4b1ff9a1bde3b14b7f"
+          },
+          "engines": {
+            "dsh": ">=0.2.0"
+          }
+        }
+      ]
+    }
+  ]
+}

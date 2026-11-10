@@ -307,6 +307,22 @@ test('attach uploads a local PDF and registers it under the paper', async () => 
   });
 });
 
+test('attach can wait for the indexer and leaves no nudge note behind', async () => {
+  await withZotero(async ({ run, server, directory }) => {
+    const { paperKey } = seedPaper(server);
+    const filePath = join(directory, 'wait.pdf');
+    await writeFile(filePath, Buffer.from('%PDF-1.4 payload to index'));
+
+    const text = await run('zotero_attach', { parent: paperKey, paths: [filePath], wait: true });
+    assert.match(text, /\[[A-Z0-9]{8}\] indexed · 1 page\(s\)/);
+    assert.doesNotMatch(text, /still indexing/);
+
+    const notes = [...server.state.items.values()].filter(item => item.data.itemType === 'note');
+    assert.equal(notes.filter(item => String(item.data.note ?? '').includes('start full-text indexing')).length, 0,
+      'the queue-nudge note must not stay in the library');
+  });
+});
+
 test('attach reports a missing file and leaves no attachment behind', async () => {
   await withZotero(async ({ run, server, directory }) => {
     const { paperKey } = seedPaper(server);

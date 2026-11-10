@@ -224,6 +224,15 @@ export async function startFakeZotero(options = {}) {
       item.data.fileMd5 = pending.md5;
       item.data.fileBytes = pending.bytes;
       state.uploads.delete(upload);
+      // Real Zotero extracts text in the background within seconds of a file
+      // arriving; pretend the pass already finished so wait-style calls resolve.
+      state.fulltext.set(key, {
+        content: 'fake pdf text',
+        indexedPages: 1,
+        totalPages: 1,
+        indexedChars: 13,
+        totalChars: 13,
+      });
       state.bump();
       send(response, 204, 'text/plain', '', headers);
       return;

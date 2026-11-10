@@ -65,16 +65,16 @@
         ]
       },
       "dist-tags": {
-        "latest": "0.1.0"
+        "latest": "0.1.1"
       },
       "versions": [
         {
-          "version": "0.1.0",
-          "publishTimestamp": 1794279247,
+          "version": "0.1.1",
+          "publishTimestamp": 1794303695,
           "source": {
             "type": "git",
             "url": "https://github.com/kuangdang123/dsh-zotero",
-            "commit": "97fc833fa2074cb7ac91d4aeaa8042dba64fc83b"
+            "commit": "72963300003c9f0384d6e269a0346f0bd83bfb54"
           },
           "engines": {
             "dsh": ">=0.2.0"

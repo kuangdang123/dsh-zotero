@@ -9,5 +9,6 @@ auth.json
 
 # Windows Explorer folder metadata
 desktop.ini
-Thumbs.db
-.DS_Store
+
+# Local scratch work: one-off scripts and fetched data, never shipped
+scratch/

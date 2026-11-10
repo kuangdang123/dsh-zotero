@@ -36,7 +36,8 @@
     "icon.svg",
     "locale",
     "market",
-    "README.md"
+    "README.md",
+    "icon.png"
   ],
   "engines": {
     "node": ">=20.11",
@@ -44,7 +45,8 @@
   },
   "scripts": {
     "test": "node --test tests/tools.test.mjs",
-    "index": "node scripts/build-index.mjs"
+    "index": "node scripts/build-index.mjs",
+    "icon": "node scripts/make-icon.mjs"
   },
   "dsh": {
     "bundle": {

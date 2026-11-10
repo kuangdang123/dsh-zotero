@@ -4,3 +4,5 @@ node_modules/
 Thumbs.db
 plugin-data/
 auth.json
+# Added by hand: a workflow needs the 'workflow' scope on the pushing token.
+.github/workflows/test.yml

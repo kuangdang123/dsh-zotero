@@ -8,6 +8,7 @@
  */
 
 import { createServer } from 'node:http';
+import { createHash } from 'node:crypto';
 
 /** Server id the fake Zotero sends and expects. */
 export const SERVER_ID = 'FAKE0000SRV1';
@@ -35,6 +36,7 @@ export async function startFakeZotero(options = {}) {
     items: new Map(),
     collections: new Map(),
     fulltext: new Map(),
+    uploads: new Map(),
     keys: new Map(),
     authorizeCalls: 0,
     writeCalls: 0,
@@ -42,6 +44,7 @@ export async function startFakeZotero(options = {}) {
     nextItemKey: keyFactory('I'),
     nextCollectionKey: keyFactory('C'),
     nextAuthKey: keyFactory('K'),
+    nextUploadKey: keyFactory('U'),
   };
 
   state.bump = () => {
@@ -53,9 +56,10 @@ export async function startFakeZotero(options = {}) {
     const chunks = [];
     request.on('data', chunk => chunks.push(chunk));
     request.on('end', () => {
-      const body = chunks.length > 0 ? Buffer.concat(chunks).toString('utf8') : '';
+      const raw = chunks.length > 0 ? Buffer.concat(chunks) : Buffer.alloc(0);
+      const body = raw.toString('utf8');
       try {
-        handle(request, response, body);
+        handle(request, response, body, raw);
       } catch (error) {
         send(response, 500, 'text/plain', String(error?.stack ?? error));
       }
@@ -67,7 +71,7 @@ export async function startFakeZotero(options = {}) {
    * @param {import('node:http').ServerResponse} response
    * @param {string} body
    */
-  function handle(request, response, body) {
+  function handle(request, response, body, raw) {
     const url = new URL(request.url, 'http://127.0.0.1');
     const headers = {
       'Zotero-API-Version': '3',
@@ -90,6 +94,11 @@ export async function startFakeZotero(options = {}) {
     }
     if (path === '/api/local/authorize') {
       handleAuthorize(request, response, body, headers);
+      return;
+    }
+    // Upload receivers take the raw bytes without a server id or an API key.
+    if (path.startsWith('/api/local/uploads/')) {
+      handleUpload(request, response, raw, headers);
       return;
     }
     if (!path.startsWith('/api/')) {
@@ -180,8 +189,104 @@ export async function startFakeZotero(options = {}) {
     send(response, 200, 'application/json', JSON.stringify({ key, remember: state.remember }), headers);
   }
 
+  /**
+   * The two halves of the upload handshake: authorize (returns an upload key)
+   * and register (consumes that key once the bytes are in).
+   */
+  function handleItemFile(request, response, key, body, headers) {
+    const item = state.items.get(key);
+    if (!item) {
+      send(response, 404, 'text/plain', 'Item not found', headers);
+      return;
+    }
+    if (!request.headers['if-none-match'] && !request.headers['if-match']) {
+      send(response, 428, 'text/plain', 'If-Match/If-None-Match header not provided', headers);
+      return;
+    }
+    if (item.data.itemType !== 'attachment') {
+      send(response, 400, 'text/plain', 'Not an attachment', headers);
+      return;
+    }
+    const form = new URLSearchParams(body);
+    const upload = form.get('upload');
+    if (upload) {
+      const pending = state.uploads.get(upload);
+      if (!pending) {
+        send(response, 400, 'text/plain', 'Invalid upload key', headers);
+        return;
+      }
+      if (!pending.receivedMd5 || pending.receivedMd5 !== pending.md5) {
+        send(response, 400, 'text/plain', 'MD5 mismatch', headers);
+        return;
+      }
+      item.data.filename = pending.filename;
+      item.data.contentType = pending.contentType || item.data.contentType;
+      item.data.fileMd5 = pending.md5;
+      item.data.fileBytes = pending.bytes;
+      state.uploads.delete(upload);
+      state.bump();
+      send(response, 204, 'text/plain', '', headers);
+      return;
+    }
+
+    const md5 = String(form.get('md5') ?? '');
+    const filename = String(form.get('filename') ?? '');
+    const filesize = Number(form.get('filesize'));
+    const contentType = String(form.get('contentType') ?? '');
+    if (!/^[0-9a-f]{32}$/i.test(md5)) {
+      send(response, 400, 'text/plain', 'Invalid MD5', headers);
+      return;
+    }
+    if (filename === '' || filename.includes('/') || filename.includes('\\')) {
+      send(response, 400, 'text/plain', 'Invalid filename', headers);
+      return;
+    }
+    if (!Number.isFinite(filesize) || filesize < 0) {
+      send(response, 400, 'text/plain', 'Invalid filesize', headers);
+      return;
+    }
+    if (item.data.fileMd5 === md5) {
+      send(response, 200, 'application/json', JSON.stringify({ exists: 1, key }), headers);
+      return;
+    }
+    const uploadKey = state.nextUploadKey();
+    state.uploads.set(uploadKey, { md5, filename, filesize, contentType, receivedMd5: '', bytes: 0 });
+    send(response, 200, 'application/json', JSON.stringify({
+      url: `http://${request.headers.host}/api/local/uploads/${uploadKey}`,
+      uploadKey,
+      contentType,
+      prefix: '',
+      suffix: '',
+      filesize,
+    }), headers);
+  }
+
+  function handleUpload(request, response, raw, headers) {
+    if (request.method !== 'POST') {
+      send(response, 405, 'text/plain', 'Method not allowed', headers);
+      return;
+    }
+    const key = new URL(request.url, 'http://127.0.0.1').pathname.split('/').pop();
+    const pending = state.uploads.get(key);
+    if (!pending) {
+      send(response, 404, 'text/plain', 'Unknown upload', headers);
+      return;
+    }
+    if (raw.length !== pending.filesize) {
+      send(response, 400, 'text/plain', 'Size mismatch', headers);
+      return;
+    }
+    pending.receivedMd5 = createHash('md5').update(raw).digest('hex');
+    pending.bytes = raw.length;
+    send(response, 201, 'text/plain', '', headers);
+  }
+
   function routeItems(request, response, method, segments, query, body, headers) {
     const [, second, third, fourth] = segments;
+    if (method === 'POST' && second !== undefined && third === 'file') {
+      handleItemFile(request, response, second, body, headers);
+      return;
+    }
     if (method === 'GET' && second === undefined) {
       listItems(response, query, headers);
       return;

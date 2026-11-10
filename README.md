@@ -48,6 +48,7 @@ key 保存在 `$DSH_PROFILE_DIR/plugin-data/dsh-zotero/auth.json`（通常形如
 | `zotero_fulltext` | 读 Zotero 已索引的 PDF 正文，支持分页（offset/maxChars）和按短语跳转（find）。 |
 | `zotero_note` | 管理笔记条目：create / append / get / list / delete。正文用 Markdown 写，自动转成 Zotero 笔记 HTML。 |
 | `zotero_add` | 入库：按 DOI/arXiv/PMID/ISBN/URL 抓元数据；或给原始 Zotero item JSON；或给一个课题让 OpenAlex/Crossref/arXiv 搜出前几条；可指定合集、标签、是否跳过重复、dryRun 预览。 |
+| `zotero_attach` | 挂文件：把本机 PDF/EPUB/TXT 上传进 Zotero storage，作为指定条目的附件（走本地 API 的三段式上传）。Zotero 只在空闲或下次启动时抽全文，所以刚挂上的文件 `zotero_fulltext` 会先报 404，属正常延迟。 |
 | `zotero_update` | 改一条：合并字段补丁、加/删标签、加/移合集、入回收站/恢复。 |
 | `zotero_delete` | 删：默认入回收站；`permanent: true` 永久删除，且必须 `confirm: true` 才执行。 |
 | `zotero_collections` | 合集管理：list / tree / get / create / rename / delete。 |
@@ -112,7 +113,8 @@ zotero_note { "action": "append", "note": "NOTE5678", "content": "补一段实�
 
 - 只连**本地** Zotero（`127.0.0.1:23119`），不经过 zotero.org 同步。
 - 只操作**个人库**（userID 0），不碰群组库。
-- 不下载、不改写 PDF 附件本身；`zotero_fulltext` 读的是 Zotero 已建索引的文本，PDF 没索引时返回提示而不是报错。
+- 不下载 PDF，也不改写已有附件；`zotero_attach` 只把本机文件**上传**进 storage，`zotero_fulltext` 读的是 Zotero 已建索引的文本（没索引时返回提示而不是报错）。
+- Zotero 的全文索引是后台批处理：只在它空闲（约 30 秒无操作）或下次启动时补齐，也可以在 Zotero 设置里手动「重建索引」。新挂上的 PDF 因此会先 404 一阵。
 - 批注由你在 Zotero 里画，插件只负责读；写操作不会新建批注。
 - “相关论文/参考文献/被引”来自 OpenAlex，无 key 时每日额度共享；大规模批量检索建议自行配 OpenAlex key（插件不强制）。
 - 外部检索的年份上限、条目字段都在代码里按 Zotero item type 白名单过滤，未知字段不会写进库。
@@ -129,7 +131,7 @@ zotero_note { "action": "append", "note": "NOTE5678", "content": "补一段实�
 
 ## 八、开源与市场收录
 
-- 源码与发布：<https://github.com/kuangdang123/dsh-zotero>，版本标签见 Releases（`v0.1.0`）。
+- 源码与发布：<https://github.com/kuangdang123/dsh-zotero>，版本标签见 Releases（最新 `v0.1.2`）。
 - 社区目录：已向 `awesome-dsh-plugin/awesome-dsh-plugin` 提交条目
   `data/plugins/kuangdang123__dsh-zotero.yml`（PR #13777）。
   合并后目录会以 format-1 索引发布（`https://cdn.jsdelivr.net/npm/dsh-plugin-catalog/index.json`），

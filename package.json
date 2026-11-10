@@ -1,6 +1,6 @@
 {
   "name": "dsh-zotero",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Direct connection between DeepSeek Harness and a local Zotero library: search, read, add, update and trash items, read PDF annotations and notes, pull indexed full text, and discover related papers by DOI. 直连本机 Zotero：查库、改库、批量入库、读注释笔记、取全文。",
   "type": "module",
   "license": "MIT",

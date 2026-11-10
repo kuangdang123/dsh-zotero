@@ -7,7 +7,8 @@
  */
 
 import assert from 'node:assert/strict';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
@@ -283,6 +284,39 @@ test('add resolves identifiers through Crossref and imports metadata', async () 
   } finally {
     globalThis.fetch = REAL_FETCH;
   }
+});
+
+test('attach uploads a local PDF and registers it under the paper', async () => {
+  await withZotero(async ({ run, server, directory }) => {
+    const { paperKey } = seedPaper(server);
+    const bytes = Buffer.from('%PDF-1.4 test payload for the upload handshake');
+    const filePath = join(directory, 'paper.pdf');
+    await writeFile(filePath, bytes);
+
+    const text = await run('zotero_attach', { parent: paperKey, paths: [filePath] });
+    assert.match(text, new RegExp(`# Attached to \\[${paperKey}\\]`));
+    assert.match(text, new RegExp(`paper\\.pdf · ${bytes.length} B · application/pdf`));
+
+    const attachment = [...server.state.items.values()]
+      .find(item => item.data.parentItem === paperKey && item.data.filename === 'paper.pdf');
+    assert.ok(attachment, text);
+    assert.equal(attachment.data.itemType, 'attachment');
+    assert.equal(attachment.data.contentType, 'application/pdf');
+    assert.equal(attachment.data.fileBytes, bytes.length);
+    assert.equal(attachment.data.fileMd5, createHash('md5').update(bytes).digest('hex'));
+  });
+});
+
+test('attach reports a missing file and leaves no attachment behind', async () => {
+  await withZotero(async ({ run, server, directory }) => {
+    const { paperKey } = seedPaper(server);
+    const missing = join(directory, 'nope.pdf');
+    const text = await run('zotero_attach', { parent: paperKey, paths: [missing] });
+    assert.match(text, /nope\.pdf/);
+    assert.match(text, /ENOENT|no such file/i);
+    const leftovers = [...server.state.items.values()].filter(item => item.data.filename === 'nope.pdf');
+    assert.equal(leftovers.length, 0);
+  });
 });
 
 test('update merges fields, tags and collections, and toggles the trash', async () => {
